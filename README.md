@@ -5,9 +5,6 @@ Improving Robustness of Radiology Report Summarization under OCR-style Text Nois
 - Maria Mahmood - 537903
 - Noor-ul-Ain Khalid - 537355
 
-## Project Title
-Improving Robustness of Radiology Report Summarization Under OCR-Style Text Noise Using RAG
-
 ## Track
 Track A: Research-Oriented Project
 
