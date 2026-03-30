@@ -1,0 +1,242 @@
+[
+  {
+    "original_findings": "No acute osseous abnormality. Lungs are hyperinflated. Flattening of the diaphragm noted. No focal consolidation. No pneumothorax.",
+    "noisy_findings": "No ooue oss eus a bnormali t.  Lu-ngs are hyperinflated.  Flattenin9 of +h c dioph-ragm notd. No- fo cal consolidation.ho p neumot-horax",
+    "reference": "Hyperinflation consistent with chronic obstructive pulmonary disease (COPD).",
+    "prediction": "Hyperinflation consistent with COPD.",
+    "rouge_l": 0.6667,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "The heart is normal in size. The mediastinum is unremarkable. Both lungs are clear. No pleural effusion or pneumothorax. Visualized bony structures are intact.",
+    "noisy_findings": "The h eart  is nQrmal in si ze.  The med1ast ihum !5 unremarkable. Both lun gs @re clear. No pleuralffus-i-on or pneu rnothonax. Visua|1ze d  bony strncturesae in tact.",
+    "reference": "Normal chest radiograph.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Diffuse bilateral airspace opacities consistent with pulmonary edema. Cardiomegaly noted. Bilateral pleural effusions present.",
+    "noisy_findings": "Dff use bilaenal aispace opacities c-qnsistent w ith  pulmonary ed3m a. Car dimegaly  noted.   Bilateral -pleural  efusions p re sent.",
+    "reference": "Pulmonary edema with cardiomegaly and bilateral pleural effusions.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "There is increased opacity in the right lower lobe consistent with pneumonia. The left lung is clear. Mild cardiomegaly is present. No pleural effusion identified.",
+    "noisy_findings": "The re -is -i ncreose o p-acity in  t he r iht  lower  lobe conzistent wit h  pncumo-nia.  Th e  1eft -lung  is clear. Mid cavdiomegaly is vesent. No pleural effusion identified.",
+    "reference": "Right lower lobe pneumonia. Mild cardiomegaly.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "The heart is normal in size. The mediastinum is unremarkable. Both lungs are clear. No pleural effusion or pneumothorax. Visualized bony structures are intact.",
+    "noisy_findings": "The heat  i s n-ormol  in zize. -The me-dias t inum is unremarkabl-e. Both lungs ar clea. N o pleurl effusio- or pneumothorx. V!sualized b ony s tru-ctures -ae- intoct",
+    "reference": "Normal chest radiograph.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "The lungs are clear bilaterally. No focal consolidation, pleural effusion, or pneumothorax is identified. The cardiomediastinal silhouette is within normal limits. Osseous structures are intact.",
+    "noisy_findings": "T h3 lun-g a re clar bilatenally. No focal consolidation, pl-eu al e-ff usion, or pn3umothoaxs ien+if ied. Tbe  eard iom ediasti-nal silh ou-ette i s -wi th i-n norm@l lmits. Osseo us structures ar i ntact",
+    "reference": "No acute cardiopulmonary abnormality.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 1.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "The cardiac silhouette is enlarged. Bilateral pleural effusions are present, left greater than right. Pulmonary vascular congestion noted.",
+    "noisy_findings": "The  cardi a c silho uefte is en-large. Biloter al pleu-ral 3fusins -ar-e pres-ent, |ef great er than rig ht. Pulmona ryvascular cong es to n noed.",
+    "reference": "Cardiomegaly with bilateral pleural effusions and pulmonary vascular congestion, consistent with congestive heart failure.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Diffuse bilateral airspace opacities consistent with pulmonary edema. Cardiomegaly noted. Bilateral pleural effusions present.",
+    "noisy_findings": "Diffus  b ilateal ai rspace opacitie conslste nt with pulmon ary ee ma. -C ardiomgal y noted. Bila t er l plenral effusi ons pesent.",
+    "reference": "Pulmonary edema with cardiomegaly and bilateral pleural effusions.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "No acute osseous abnormality. Lungs are hyperinflated. Flattening of the diaphragm noted. No focal consolidation. No pneumothorax.",
+    "noisy_findings": "No acute oscous abn ormaity. Lu ngs are byp er-inflated. Flatt3ning of the  diaphragm  note d.  No focal  consoli-datioh. mop numothora x-.",
+    "reference": "Hyperinflation consistent with chronic obstructive pulmonary disease (COPD).",
+    "prediction": "Hyperinflation consistent with COPD.",
+    "rouge_l": 0.6667,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Linear opacities at the left base consistent with subsegmental atelectasis. No pneumonia or pleural effusion. Heart size normal.",
+    "noisy_findings": "Linear opacities at he left as e  consistent- wi th  zubsegmenal  a+ele ct4sis.  No peumnia qr pl eural effusi Qm. H3art  size noral.",
+    "reference": "Subsegmental atelectasis at the left base. No acute pneumonia.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.3077,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Linear opacities at the left base consistent with subsegmental atelectasis. No pneumonia or pleural effusion. Heart size normal.",
+    "noisy_findings": "L inea r opacities ot t heleft base consistent -wit h  su6segm-enta ate leefasis. No pn eumonia or leural eff-usio n.  Hert s1e  n ormal.",
+    "reference": "Subsegmental atelectasis at the left base. No acute pneumonia.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.3077,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Patchy opacity in the left lower lobe. Mild blunting of the left costophrenic angle suggesting small pleural effusion. Heart size normal.",
+    "noisy_findings": "Patchy  pcity ithe  left  loer l-obe. Mild b lu nting of  +he leftcostophrenic angle sugge stin g s mall pleural effsioh Hear+ 1ze- mormal .",
+    "reference": "Left lower lobe opacity with small pleural effusion, possibly pneumonia or atelectasis.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "The cardiac silhouette is enlarged. Bilateral pleural effusions are present, left greater than right. Pulmonary vascular congestion noted.",
+    "noisy_findings": "The cariacsilhouette is enlarged. Bi laterl pleural  eff-u sions  are  pvsent,  left gr3ater thn riqht. P ulmonary vacul-ar con qest ion otd.",
+    "reference": "Cardiomegaly with bilateral pleural effusions and pulmonary vascular congestion, consistent with congestive heart failure.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Diffuse bilateral airspace opacities consistent with pulmonary edema. Cardiomegaly noted. Bilateral pleural effusions present.",
+    "noisy_findings": "Diffuse bil oteral a!rspoc opacities cns istet wlt plmonar y ed-ema. Cardiomegaly nted. Biat ral pleural eff uions pr e s-ent",
+    "reference": "Pulmonary edema with cardiomegaly and bilateral pleural effusions.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Right-sided pneumothorax identified with partial collapse of the right lung. Tracheal deviation to the left. No rib fractures identified.",
+    "noisy_findings": "Rih t-zided pneumth oraxientifed with partial c ollapse of  the right l u9. rachal de-viation  to  the left No ri6 fractrcs- ide ntif!ed",
+    "reference": "Right-sided pneumothorax with partial lung collapse.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Right-sided pneumothorax identified with partial collapse of the right lung. Tracheal deviation to the left. No rib fractures identified.",
+    "noisy_findings": "Rig h-sided- pheumothor ax identified with partiaI co llapse  of te r!ght lung . T rache 4l dcviati o o the left. N -vib f ractues iden tfied .",
+    "reference": "Right-sided pneumothorax with partial lung collapse.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "There is increased opacity in the right lower lobe consistent with pneumonia. The left lung is clear. Mild cardiomegaly is present. No pleural effusion identified.",
+    "noisy_findings": "Thee is  in creas ed  opacity   in the r ight lower lb0nistent with -pneumo hi@.  Tne left lun is cear. Mld c ardiomealy s pre sent. No pleural effuson ident ified",
+    "reference": "Right lower lobe pneumonia. Mild cardiomegaly.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Mild interstitial prominence noted bilaterally. Heart size is at the upper limits of normal. No pleural effusion. No pneumothorax. Bony thorax is unremarkable.",
+    "noisy_findings": "Mil-d 1nters-fitial proi nen ce oted  bilate rall. He art sizc is at the upper li-mi ts- of nrmal. Nop leural effusion. No p neumotborax. B ony   th-orax is u nrem arab l3.",
+    "reference": "Mild interstitial prominence, possibly early pulmonary edema.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Linear opacities at the left base consistent with subsegmental atelectasis. No pneumonia or pleural effusion. Heart size normal.",
+    "noisy_findings": "Linea opac!ties atthe left 6@se -con sisten-t with subsegmena| atelectasi. No pne umon ia or pleural ef-fu-sion.  ear- s ize nornal.",
+    "reference": "Subsegmental atelectasis at the left base. No acute pneumonia.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.3077,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "The cardiac silhouette is enlarged. Bilateral pleural effusions are present, left greater than right. Pulmonary vascular congestion noted.",
+    "noisy_findings": "he  cariacsilhuettc  is enlarged. Bilater 4l leurl ef fus!ons a-re present,  lef+ g reater  th an right. Pulmonary va$cular cong etih not e d.",
+    "reference": "Cardiomegaly with bilateral pleural effusions and pulmonary vascular congestion, consistent with congestive heart failure.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "The heart is normal in size. The mediastinum is unremarkable. Both lungs are clear. No pleural effusion or pneumothorax. Visualized bony structures are intact.",
+    "noisy_findings": "Te h ear-t is norm al 1n size. The  mediastiun isunremavkable.  Both lungs are ce-ar. No p leuol effusio n or pneumoth ora. -Visualized b ony st nuct-ures  a re  intact.",
+    "reference": "Normal chest radiograph.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Right-sided pneumothorax identified with partial collapse of the right lung. Tracheal deviation to the left. No rib fractures identified.",
+    "noisy_findings": "Right-si dd pneum otb0ra x idehtlfiedw!th  prtial col-lapse of the  right lung Tr-ac hea1 deviation -tothe left.No  r1b fracture s identified",
+    "reference": "Right-sided pneumothorax with partial lung collapse.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Patchy opacity in the left lower lobe. Mild blunting of the left costophrenic angle suggesting small pleural effusion. Heart size normal.",
+    "noisy_findings": "ath  opait in the  l-ef lo wen obe.  Mild blunting of fhe left cost-ophreni-c angle suqgestin g small ple url effuso. Hert size ormal.",
+    "reference": "Left lower lobe opacity with small pleural effusion, possibly pneumonia or atelectasis.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Diffuse bilateral airspace opacities consistent with pulmonary edema. Cardiomegaly noted. Bilateral pleural effusions present.",
+    "noisy_findings": "Diffuse bi lateral airspace  op acites -consisfent with pul-m-o@y edma . C 4rdiomega ly  n oted.- Bilateral pleur4l 3ffusions pr sen.",
+    "reference": "Pulmonary edema with cardiomegaly and bilateral pleural effusions.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Mild interstitial prominence noted bilaterally. Heart size is at the upper limits of normal. No pleural effusion. No pneumothorax. Bony thorax is unremarkable.",
+    "noisy_findings": "MiId ih+erstitial  p romine-nce  notcdbilaterlly.  Hearf size is a +he upper l imit-s of normal. N o  ple-ural ffusion-. N o pne umothovax.  Bohy  thorax ls un remarkable.",
+    "reference": "Mild interstitial prominence, possibly early pulmonary edema.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "The lungs are clear bilaterally. No focal consolidation, pleural effusion, or pneumothorax is identified. The cardiomediastinal silhouette is within normal limits. Osseous structures are intact.",
+    "noisy_findings": "Tnelungs  a re clear  bilat eralIy.  No foca l-  conQlidatlon, pl3url effu-sio n, or pneumothorax is i-dentifi-e d +he car d iomedi astil silhQue tte is within nor nal limts. Qsseou structures are intact.",
+    "reference": "No acute cardiopulmonary abnormality.",
+    "prediction": "Pneumothorax identified.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Linear opacities at the left base consistent with subsegmental atelectasis. No pneumonia or pleural effusion. Heart size normal.",
+    "noisy_findings": "Linear opacitis at th e left bas e consisten t wth subseg m entl aelecta-sis.  Nq pneum on1a or leu-ral  effus!on.  H-eart iz3  normal.",
+    "reference": "Subsegmental atelectasis at the left base. No acute pneumonia.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.3077,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "The heart is normal in size. The mediastinum is unremarkable. Both lungs are clear. No pleural effusion or pneumothorax. Visualized bony structures are intact.",
+    "noisy_findings": "The heart is norm a-l in slze. The medi a stinnm is unema r kable. Both lungs a-re cle ar.  No peural effusi on or-pne-umqthora. Visualiz-ed b ony strct nre $ ar infact.",
+    "reference": "Normal chest radiograph.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "Right-sided pneumothorax identified with partial collapse of the right lung. Tracheal deviation to the left. No rib fractures identified.",
+    "noisy_findings": "Right-sidcd pneumothorax id3ntlfied   with- partial -colap5e -of the  right lung.  Trachcl deviation tot-he |ef t. o rlb factures  identified.-",
+    "reference": "Right-sided pneumothorax with partial lung collapse.",
+    "prediction": "Right-sided pneumothorax identified.",
+    "rouge_l": 0.5455,
+    "noise_level": 0.2
+  },
+  {
+    "original_findings": "The cardiac silhouette is enlarged. Bilateral pleural effusions are present, left greater than right. Pulmonary vascular congestion noted.",
+    "noisy_findings": "Th -c-ardiac siho uettis enlarged. Bila teral  leu rol effus ions 4re  present, left qreaten than rig ht. Pul monary vasulav conestio ofed.",
+    "reference": "Cardiomegaly with bilateral pleural effusions and pulmonary vascular congestion, consistent with congestive heart failure.",
+    "prediction": "No acute cardiopulmonary abnormality.",
+    "rouge_l": 0.0,
+    "noise_level": 0.2
+  }
+]

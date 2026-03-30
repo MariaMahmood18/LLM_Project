@@ -1,0 +1,11 @@
+{
+  "taxonomy": {
+    "missed_pathology": 16,
+    "other_failure": 36,
+    "generic_impression": 67,
+    "correct": 63,
+    "noise_corrupted_output": 27,
+    "partial_match": 1
+  },
+  "total": 210
+}
