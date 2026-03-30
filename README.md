@@ -1,7 +1,5 @@
-# LLM_Project
-Improving Robustness of Radiology Report Summarization under OCR-style Text Noise using RAG
-=======
 # CS-818 Large Language Models - Semester Project
+Improving Robustness of Radiology Report Summarization under OCR-style Text Noise using RAG
 
 ## Team Members
 - Maria Mahmood - 537903
