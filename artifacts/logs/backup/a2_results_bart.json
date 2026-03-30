@@ -1,0 +1,29 @@
+[
+  {
+    "condition": "clean_baseline",
+    "rouge_l_f": 0.1787,
+    "rouge_l_p": 0.1179,
+    "rouge_l_r": 0.406,
+    "bertscore_f1": 0.8602,
+    "bertscore_p": 0.8456,
+    "bertscore_r": 0.8756
+  },
+  {
+    "condition": "noisy_baseline_10pct",
+    "rouge_l_f": 0.0949,
+    "rouge_l_p": 0.0639,
+    "rouge_l_r": 0.2028,
+    "bertscore_f1": 0.8228,
+    "bertscore_p": 0.7957,
+    "bertscore_r": 0.8523
+  },
+  {
+    "condition": "rag_enhanced",
+    "rouge_l_f": 0.1299,
+    "rouge_l_p": 0.0873,
+    "rouge_l_r": 0.294,
+    "bertscore_f1": 0.8544,
+    "bertscore_p": 0.8461,
+    "bertscore_r": 0.8633
+  }
+]
