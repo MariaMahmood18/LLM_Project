@@ -262,180 +262,94 @@ hr { border-color: var(--border) !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── OCR noise constants (mirror noise_injection.py) ───────────────
-OCR_SUBSTITUTIONS = {
-    'a': ['@', '4', 'o'], 'e': ['3', 'c'], 'i': ['1', 'l', '!'],
-    'o': ['0', 'Q', 'q'], 's': ['5', '$', 'z'], 'l': ['1', 'I', '|'],
-    'g': ['9', 'q'], 'b': ['6', 'd'], 'n': ['m', 'h'], 't': ['f', '+'],
-    'r': ['n', 'v'], 'u': ['v', 'n'], 'c': ['e', 'o'], 'm': ['n', 'rn'],
-    'h': ['n', 'b'],
-}
+# ── Imports from your actual src/ modules ─────────────────────────
+import sys, os, time
 
-# ── Knowledge base samples (real train data subset) ───────────────
-KNOWLEDGE_BASE = [
-    {"findings": "The lungs are clear bilaterally. No focal consolidation, pleural effusion, or pneumothorax. Cardiomediastinal silhouette is within normal limits.",
-     "impression": "No acute cardiopulmonary abnormality."},
-    {"findings": "Hyperinflated lungs with flattened diaphragms consistent with emphysema. No focal consolidation. Normal heart size.",
-     "impression": "Hyperinflation consistent with COPD. No acute process."},
-    {"findings": "Right lower lobe opacity consistent with pneumonia. The left lung is clear. Mild cardiomegaly.",
-     "impression": "Right lower lobe pneumonia. Mild cardiomegaly."},
-    {"findings": "Cardiac silhouette is enlarged. Bilateral pleural effusions. Pulmonary vascular congestion noted.",
-     "impression": "Cardiomegaly with bilateral pleural effusions consistent with CHF."},
-    {"findings": "Right-sided pneumothorax with partial collapse of the right lung. Tracheal deviation to the left.",
-     "impression": "Right-sided pneumothorax with partial lung collapse."},
-    {"findings": "Mild interstitial prominence noted bilaterally. Heart size upper limits of normal. No pleural effusion.",
-     "impression": "Mild interstitial prominence, possibly early pulmonary edema."},
-    {"findings": "Linear opacities at the left base consistent with subsegmental atelectasis. No pneumonia. Heart size normal.",
-     "impression": "Subsegmental atelectasis at the left base. No acute pneumonia."},
-    {"findings": "Heart size and mediastinal contours normal. No focal consolidation, pneumothorax or effusion.",
-     "impression": "Normal chest radiograph."},
-]
+# Add the project root (one level above streamlit_app/) to sys.path
+# so that `src/` is importable exactly as your pipeline scripts do it.
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
 
-# ── Sample findings ───────────────────────────────────────────────
+# noise_injection.py  — inject_noise(), inject_noise_batch(), OCR_SUBSTITUTIONS
+from src.data.noise_injection import inject_noise, OCR_SUBSTITUTIONS
+
+# rag_model.py        — SimpleRAG (SentenceTransformer cosine similarity)
+from src.models.rag_model import SimpleRAG
+
+# run_a3_diagnostics  — mock_summarize() rule-based summarizer
+#   We import it directly so it is the exact same function used in your pipeline.
+import importlib.util, types
+_diag_path = os.path.join(PROJECT_ROOT, "scripts", "run_a3_diagnostics.py")
+_spec = importlib.util.spec_from_file_location("run_a3_diagnostics", _diag_path)
+_diag_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_diag_mod)
+mock_summarize = _diag_mod.mock_summarize
+
+# metrics.py          — compute_rouge_l() using rouge_score library
+from src.evaluation.metrics import compute_rouge_l
+
+# load_data.py        — to read your saved train split as the RAG knowledge base
+from src.data.load_data import _synthetic_fallback
+import json
+
+# ── Load knowledge base (use saved train split if available) ───────
+@st.cache_resource
+def load_knowledge_base():
+    train_path = os.path.join(PROJECT_ROOT, "artifacts", "data", "train.json")
+    if os.path.exists(train_path):
+        with open(train_path) as f:
+            kb = json.load(f)
+        return kb
+    # fall back to synthetic data (same as load_data._synthetic_fallback)
+    return _synthetic_fallback()
+
+@st.cache_resource
+def load_rag(kb):
+    rag = SimpleRAG(embedding_model="all-MiniLM-L6-v2")
+    rag.build_index(kb)
+    return rag
+
+# ── Sample findings (from your actual test.json records) ──────────
 SAMPLE_FINDINGS = {
-    "Normal Chest": "The lungs are clear bilaterally. No focal consolidation, pleural effusion, or pneumothorax is identified. The cardiomediastinal silhouette is within normal limits. Osseous structures are intact.",
-    "Pneumonia": "There is increased opacity in the right lower lobe consistent with pneumonia. The left lung is clear. Mild cardiomegaly is present. No pleural effusion identified.",
-    "COPD / Emphysema": "No acute osseous abnormality. Lungs are hyperinflated. Flattening of the diaphragm noted. No focal consolidation. No pneumothorax.",
-    "Congestive Heart Failure": "The cardiac silhouette is enlarged. Bilateral pleural effusions are present, left greater than right. Pulmonary vascular congestion noted.",
-    "Pneumothorax": "Right-sided pneumothorax identified with partial collapse of the right lung. Tracheal deviation to the left. No rib fractures identified.",
-    "Atelectasis": "Linear opacities at the left base consistent with subsegmental atelectasis. No pneumonia or pleural effusion. Heart size normal.",
-    "Pulmonary Edema": "Diffuse bilateral airspace opacities consistent with pulmonary edema. Cardiomegaly noted. Bilateral pleural effusions present.",
+    "Normal Chest":
+        "The lungs are clear bilaterally. No focal consolidation, pleural effusion, or pneumothorax is identified. "
+        "The cardiomediastinal silhouette is within normal limits. Osseous structures are intact.",
+    "Pneumonia":
+        "There is increased opacity in the right lower lobe consistent with pneumonia. The left lung is clear. "
+        "Mild cardiomegaly is present. No pleural effusion identified.",
+    "COPD / Emphysema":
+        "No acute osseous abnormality. Lungs are hyperinflated. Flattening of the diaphragm noted. "
+        "No focal consolidation. No pneumothorax.",
+    "Congestive Heart Failure":
+        "The cardiac silhouette is enlarged. Bilateral pleural effusions are present, left greater than right. "
+        "Pulmonary vascular congestion noted.",
+    "Pneumothorax":
+        "Right-sided pneumothorax identified with partial collapse of the right lung. "
+        "Tracheal deviation to the left. No rib fractures identified.",
+    "Atelectasis":
+        "Linear opacities at the left base consistent with subsegmental atelectasis. "
+        "No pneumonia or pleural effusion. Heart size normal.",
+    "Pulmonary Edema":
+        "Diffuse bilateral airspace opacities consistent with pulmonary edema. "
+        "Cardiomegaly noted. Bilateral pleural effusions present.",
 }
 
 SAMPLE_REFERENCES = {
-    "Normal Chest": "No acute cardiopulmonary abnormality.",
-    "Pneumonia": "Right lower lobe pneumonia. Mild cardiomegaly.",
-    "COPD / Emphysema": "Hyperinflation consistent with chronic obstructive pulmonary disease (COPD).",
-    "Congestive Heart Failure": "Cardiomegaly with bilateral pleural effusions and pulmonary vascular congestion, consistent with congestive heart failure.",
-    "Pneumothorax": "Right-sided pneumothorax with partial lung collapse.",
-    "Atelectasis": "Subsegmental atelectasis at the left base. No acute pneumonia.",
-    "Pulmonary Edema": "Pulmonary edema with cardiomegaly and bilateral pleural effusions.",
+    "Normal Chest":            "No acute cardiopulmonary abnormality.",
+    "Pneumonia":               "Right lower lobe pneumonia. Mild cardiomegaly.",
+    "COPD / Emphysema":        "Hyperinflation consistent with chronic obstructive pulmonary disease (COPD).",
+    "Congestive Heart Failure":"Cardiomegaly with bilateral pleural effusions and pulmonary vascular congestion, consistent with congestive heart failure.",
+    "Pneumothorax":            "Right-sided pneumothorax with partial lung collapse.",
+    "Atelectasis":             "Subsegmental atelectasis at the left base. No acute pneumonia.",
+    "Pulmonary Edema":         "Pulmonary edema with cardiomegaly and bilateral pleural effusions.",
 }
 
-# ── Core functions ────────────────────────────────────────────────
-
-def inject_noise(text: str, noise_level: float = 0.10, seed: int = 42) -> str:
-    random.seed(seed)
-    chars = list(text)
-    n_corrupt = max(1, int(len(chars) * noise_level))
-    indices = random.sample(range(len(chars)), min(n_corrupt, len(chars)))
-    corrupted_positions = set(indices)
-    for idx in indices:
-        operation = random.choice(['substitute', 'delete', 'fragment', 'space'])
-        char = chars[idx]
-        if operation == 'substitute':
-            lower = char.lower()
-            if lower in OCR_SUBSTITUTIONS:
-                chars[idx] = random.choice(OCR_SUBSTITUTIONS[lower])
-        elif operation == 'delete':
-            chars[idx] = ''
-        elif operation == 'fragment':
-            chars[idx] = char + random.choice(['-', ' '])
-        elif operation == 'space':
-            chars[idx] = char + ' '
-    return ''.join(chars), corrupted_positions
-
-
-def highlight_noise(original: str, noisy: str) -> str:
-    """Build HTML with corrupted characters highlighted."""
-    # Simple diff: mark positions where characters differ
-    html_parts = []
-    ni = 0
-    for oi, oc in enumerate(original):
-        if ni >= len(noisy):
-            break
-        nc = noisy[ni]
-        if oc == nc:
-            html_parts.append(nc)
-            ni += 1
-        else:
-            # Corrupted segment
-            html_parts.append(f'<span class="noise-char">{nc}</span>')
-            ni += 1
-    if ni < len(noisy):
-        html_parts.append(f'<span class="noise-char">{noisy[ni:]}</span>')
-    return ''.join(html_parts)
-
-
-def word_overlap_retrieve(query: str, kb: list, top_k: int = 3) -> list:
-    """Jaccard-similarity retrieval (no heavy deps needed)."""
-    query_tokens = set(query.lower().split())
-    scores = []
-    for i, rec in enumerate(kb):
-        kb_tokens = set(rec["findings"].lower().split())
-        if not query_tokens or not kb_tokens:
-            scores.append((0, i))
-            continue
-        overlap = len(query_tokens & kb_tokens)
-        union   = len(query_tokens | kb_tokens)
-        scores.append((overlap / union, i))
-    scores.sort(reverse=True)
-    return [(scores[j][0], kb[scores[j][1]]) for j in range(min(top_k, len(scores)))]
-
-
-def build_rag_prompt(noisy_findings: str, top_k: int = 3) -> tuple:
-    retrieved = word_overlap_retrieve(noisy_findings, KNOWLEDGE_BASE, top_k)
-    parts = []
-    for i, (sim, r) in enumerate(retrieved):
-        parts.append((sim, r, f"Example {i+1}:\nFindings: {r['findings']}\nImpression: {r['impression']}"))
-    context = "\n\n".join(p[2] for p in parts)
-    if len(context) > 800:
-        context = context[:800] + "..."
-    prompt = f"{context}\n\nNow summarize:\nFindings: {noisy_findings}\nImpression:"
-    return prompt, [(p[0], p[1]) for p in parts]
-
-
-def mock_summarize(text: str) -> str:
-    """Rule-based summarizer (mirrors mock_summarize in run_a3_diagnostics.py)."""
-    tl = text.lower()
-    if "pneumothorax" in tl and "right" in tl:
-        return "Right-sided pneumothorax identified."
-    elif "pneumothorax" in tl:
-        return "Pneumothorax identified."
-    elif "pneumonia" in tl and "right lower" in tl:
-        return "Right lower lobe pneumonia."
-    elif "pneumonia" in tl:
-        return "Pneumonia identified."
-    elif "pulmonary edema" in tl:
-        return "Pulmonary edema with cardiomegaly."
-    elif "pleural effusion" in tl and "cardiomegaly" in tl:
-        return "Cardiomegaly with bilateral pleural effusions consistent with heart failure."
-    elif any(w in tl for w in ["hyperinflat", "copd", "emphys", "diaphragm"]):
-        return "Hyperinflation consistent with COPD."
-    elif "atelectasis" in tl:
-        return "Subsegmental atelectasis. No acute pneumonia."
-    elif "interstitial" in tl:
-        return "Mild interstitial prominence, possibly early pulmonary edema."
-    elif "clear" in tl and "no focal" in tl:
-        return "No acute cardiopulmonary abnormality."
-    else:
-        return "No acute cardiopulmonary abnormality."
-
-
-def compute_rouge_l_simple(prediction: str, reference: str) -> float:
-    """Simple ROUGE-L without external deps."""
-    pred_tokens = prediction.lower().split()
-    ref_tokens  = reference.lower().split()
-    if not pred_tokens or not ref_tokens:
-        return 0.0
-    # LCS via DP
-    m, n = len(ref_tokens), len(pred_tokens)
-    dp = [[0] * (n + 1) for _ in range(m + 1)]
-    for i in range(1, m + 1):
-        for j in range(1, n + 1):
-            dp[i][j] = dp[i-1][j-1] + 1 if ref_tokens[i-1] == pred_tokens[j-1] else max(dp[i-1][j], dp[i][j-1])
-    lcs = dp[m][n]
-    precision = lcs / n if n else 0
-    recall    = lcs / m if m else 0
-    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0
-    return round(f1, 4)
-
-
+# ── Helper ────────────────────────────────────────────────────────
 def color_class(val: float) -> str:
     if val >= 0.35: return "good"
     if val >= 0.15: return "mid"
     return "bad"
-
 
 # ── SIDEBAR ───────────────────────────────────────────────────────
 with st.sidebar:
@@ -502,9 +416,12 @@ if use_custom:
         height=120,
         key="custom_input"
     )
-    reference_impression = st.text_input("Reference impression (ground truth)", value=SAMPLE_REFERENCES[sample_choice])
+    reference_impression = st.text_input(
+        "Reference impression (ground truth)",
+        value=SAMPLE_REFERENCES[sample_choice]
+    )
 else:
-    findings_text       = SAMPLE_FINDINGS[sample_choice]
+    findings_text        = SAMPLE_FINDINGS[sample_choice]
     reference_impression = SAMPLE_REFERENCES[sample_choice]
 
 run_btn = st.button("▶  Run Pipeline", use_container_width=False)
@@ -522,29 +439,49 @@ if not run_btn and "pipeline_ran" not in st.session_state:
     """, unsafe_allow_html=True)
     st.stop()
 
-# ── RUN PIPELINE ──────────────────────────────────────────────────
+# ── RUN PIPELINE using your exact src/ modules ────────────────────
 st.session_state["pipeline_ran"] = True
 
+with st.spinner("Loading knowledge base & building RAG index…"):
+    kb  = load_knowledge_base()
+    rag = load_rag(kb) # hashable key for cache
+
 with st.spinner("Running pipeline…"):
-    time.sleep(0.3)  # slight pause for UX feel
 
-    # Stage 1: Clean
-    clean_pred = mock_summarize(findings_text)
-    clean_rouge = compute_rouge_l_simple(clean_pred, reference_impression)
+    # ── Stage 1: Clean baseline ───────────────────────────────────
+    # inject_noise() from src/data/noise_injection.py  (returns str, no tuple)
+    clean_pred  = mock_summarize(findings_text)
+    # compute_rouge_l() from src/evaluation/metrics.py
+    clean_metrics = compute_rouge_l([clean_pred], [reference_impression])
+    clean_rouge   = clean_metrics["rouge_l_f"]
 
-    # Stage 2: Noisy
-    noisy_text, _ = inject_noise(findings_text, noise_level=noise_level, seed=seed)
-    noisy_pred = mock_summarize(noisy_text)
-    noisy_rouge = compute_rouge_l_simple(noisy_pred, reference_impression)
+    # ── Stage 2: Noisy baseline ───────────────────────────────────
+    # inject_noise() signature: (text, noise_level, seed) → str
+    noisy_text  = inject_noise(findings_text, noise_level=noise_level, seed=int(seed))
+    noisy_pred  = mock_summarize(noisy_text)
+    noisy_metrics = compute_rouge_l([noisy_pred], [reference_impression])
+    noisy_rouge   = noisy_metrics["rouge_l_f"]
 
-    # Stage 3: RAG
-    rag_prompt, retrieved_docs = build_rag_prompt(noisy_text, top_k=top_k)
-    rag_pred  = mock_summarize(rag_prompt)
-    rag_rouge = compute_rouge_l_simple(rag_pred, reference_impression)
+    # ── Stage 3: RAG enhanced ─────────────────────────────────────
+    # SimpleRAG.retrieve() uses SentenceTransformer cosine similarity
+    # SimpleRAG.build_rag_prompt() prepends retrieved examples
+    rag_prompt_str = rag.build_rag_prompt(noisy_text, top_k=top_k)
+    retrieved_raw  = rag.retrieve(noisy_text, top_k=top_k)   # list of dicts
+    # Build (similarity_placeholder, doc) pairs for display
+    # (SimpleRAG doesn't expose raw scores, so we compute word-overlap for display only)
+    def _jaccard(a, b):
+        ta, tb = set(a.lower().split()), set(b.lower().split())
+        return len(ta & tb) / len(ta | tb) if (ta | tb) else 0.0
+    retrieved_docs = [(_jaccard(noisy_text, r["findings"]), r) for r in retrieved_raw]
 
-    # Degradation & recovery
-    degradation = (clean_rouge - noisy_rouge) / clean_rouge * 100 if clean_rouge > 0 else 0
-    recovery    = (rag_rouge - noisy_rouge) / noisy_rouge * 100 if noisy_rouge > 0 else 0
+    rag_record  = {"findings": rag_prompt_str, "impression": reference_impression}
+    rag_pred    = mock_summarize(rag_prompt_str)
+    rag_metrics = compute_rouge_l([rag_pred], [reference_impression])
+    rag_rouge   = rag_metrics["rouge_l_f"]
+
+    # ── Derived stats ─────────────────────────────────────────────
+    degradation = (clean_rouge - noisy_rouge) / clean_rouge * 100 if clean_rouge > 0 else 0.0
+    recovery    = (rag_rouge - noisy_rouge)   / noisy_rouge * 100 if noisy_rouge > 0 else 0.0
 
 # ── TABS ──────────────────────────────────────────────────────────
 tab1, tab2, tab3, tab4 = st.tabs([
@@ -573,16 +510,20 @@ with tab1:
         st.markdown(f"""
         <div class="metric-row">
           <div class="metric-pill">
-            <span class="label">ROUGE-L</span>
+            <span class="label">ROUGE-L F1</span>
             <span class="value {cc}">{clean_rouge:.4f}</span>
+          </div>
+          <div class="metric-pill">
+            <span class="label">Precision</span>
+            <span class="value {cc}">{clean_metrics['rouge_l_p']:.4f}</span>
+          </div>
+          <div class="metric-pill">
+            <span class="label">Recall</span>
+            <span class="value {cc}">{clean_metrics['rouge_l_r']:.4f}</span>
           </div>
           <div class="metric-pill">
             <span class="label">Noise Level</span>
             <span class="value good">0%</span>
-          </div>
-          <div class="metric-pill">
-            <span class="label">RAG</span>
-            <span class="value" style="color:#8b949e;">OFF</span>
           </div>
         </div>
         """, unsafe_allow_html=True)
@@ -600,7 +541,7 @@ with tab2:
         st.markdown('<div class="section-header">Original Findings</div>', unsafe_allow_html=True)
         st.markdown(f'<div class="code-block">{findings_text}</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="section-header">How noise is injected</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">How noise is injected — src/data/noise_injection.py</div>', unsafe_allow_html=True)
         st.markdown("""
         <div class="card" style="margin-bottom:0;">
           <table class="compare-table">
@@ -626,12 +567,16 @@ with tab2:
         st.markdown(f"""
         <div class="metric-row">
           <div class="metric-pill">
-            <span class="label">ROUGE-L</span>
+            <span class="label">ROUGE-L F1</span>
             <span class="value {nc}">{noisy_rouge:.4f}</span>
           </div>
           <div class="metric-pill">
-            <span class="label">Noise Level</span>
-            <span class="value bad">{int(noise_level*100)}%</span>
+            <span class="label">Precision</span>
+            <span class="value {nc}">{noisy_metrics['rouge_l_p']:.4f}</span>
+          </div>
+          <div class="metric-pill">
+            <span class="label">Recall</span>
+            <span class="value {nc}">{noisy_metrics['rouge_l_r']:.4f}</span>
           </div>
           <div class="metric-pill">
             <span class="label">Degradation</span>
@@ -641,7 +586,7 @@ with tab2:
         """, unsafe_allow_html=True)
 
         if degradation > 20:
-            st.error(f"⚠️  Significant degradation ({degradation:.1f}%) from noise — model struggled with corrupted tokens.")
+            st.error(f"⚠️  Significant degradation ({degradation:.1f}%) from noise.")
         elif degradation > 5:
             st.warning(f"Moderate degradation ({degradation:.1f}%) from OCR noise.")
         else:
@@ -651,13 +596,11 @@ with tab2:
 with tab3:
     st.markdown('<div class="stage-badge stage-rag">Stage 3 — RAG Enhanced</div>', unsafe_allow_html=True)
 
-    # Retrieved docs
-    st.markdown(f'<div class="section-header">Retrieved Knowledge Base Examples (top-{top_k})</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="section-header">Retrieved Knowledge Base Examples (top-{top_k}) — src/models/rag_model.py · SimpleRAG</div>', unsafe_allow_html=True)
 
     for i, (sim, doc) in enumerate(retrieved_docs):
         sim_pct = int(sim * 100)
-        sim_color = "good" if sim_pct > 20 else "mid" if sim_pct > 10 else "bad"
-        with st.expander(f"Example {i+1} — Jaccard similarity: {sim_pct}%", expanded=(i == 0)):
+        with st.expander(f"Example {i+1} — word-overlap similarity: {sim_pct}%", expanded=(i == 0)):
             col_a, col_b = st.columns(2)
             with col_a:
                 st.markdown("**Findings**")
@@ -667,7 +610,7 @@ with tab3:
                 st.markdown(f'<div class="code-block out">{doc["impression"]}</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="section-header">Augmented Prompt sent to model</div>', unsafe_allow_html=True)
-    prompt_preview = rag_prompt[:600] + ("…" if len(rag_prompt) > 600 else "")
+    prompt_preview = rag_prompt_str[:600] + ("…" if len(rag_prompt_str) > 600 else "")
     st.markdown(f'<div class="code-block rag">{prompt_preview}</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="section-header">RAG-Enhanced Prediction</div>', unsafe_allow_html=True)
@@ -680,8 +623,16 @@ with tab3:
         st.markdown(f"""
         <div class="metric-row">
           <div class="metric-pill">
-            <span class="label">ROUGE-L</span>
+            <span class="label">ROUGE-L F1</span>
             <span class="value {rc}">{rag_rouge:.4f}</span>
+          </div>
+          <div class="metric-pill">
+            <span class="label">Precision</span>
+            <span class="value {rc}">{rag_metrics['rouge_l_p']:.4f}</span>
+          </div>
+          <div class="metric-pill">
+            <span class="label">Recall</span>
+            <span class="value {rc}">{rag_metrics['rouge_l_r']:.4f}</span>
           </div>
           <div class="metric-pill">
             <span class="label">RAG top-k</span>
@@ -698,7 +649,6 @@ with tab3:
 with tab4:
     st.markdown('<div class="stage-badge stage-eval">Results Summary</div>', unsafe_allow_html=True)
 
-    # Summary table
     st.markdown('<div class="section-header">Condition Comparison</div>', unsafe_allow_html=True)
 
     def rouge_bar(val):
@@ -712,7 +662,7 @@ with tab4:
       <tr>
         <th>Condition</th>
         <th>Input</th>
-        <th>ROUGE-L</th>
+        <th>ROUGE-L F1</th>
         <th>vs Clean</th>
         <th>Impression</th>
       </tr>
@@ -743,13 +693,12 @@ with tab4:
           <span class="{color_class(rag_rouge)}">{rag_rouge:.4f}</span>
           {rouge_bar(rag_rouge)}
         </td>
-        <td class="{'good' if rag_rouge >= clean_rouge else 'mid'}">{'+' if rag_rouge >= clean_rouge else ''}{((rag_rouge-clean_rouge)/clean_rouge*100):.1f}%</td>
+        <td class="{'good' if rag_rouge >= clean_rouge else 'mid'}">{'+' if rag_rouge >= clean_rouge else ''}{((rag_rouge-clean_rouge)/clean_rouge*100 if clean_rouge > 0 else 0.0):.1f}%</td>
         <td style="font-family:'IBM Plex Mono';font-size:.75rem;">{rag_pred}</td>
       </tr>
     </table>
     """, unsafe_allow_html=True)
 
-    # Key takeaways
     st.markdown('<div class="section-header" style="margin-top:2rem;">Key Takeaways</div>', unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns(3)
@@ -765,7 +714,6 @@ with tab4:
           </p>
         </div>
         """, unsafe_allow_html=True)
-
     with col2:
         st.markdown(f"""
         <div class="card">
@@ -778,7 +726,6 @@ with tab4:
           </p>
         </div>
         """, unsafe_allow_html=True)
-
     with col3:
         chars_corrupted = max(1, int(len(findings_text) * noise_level))
         st.markdown(f"""
@@ -793,8 +740,7 @@ with tab4:
         </div>
         """, unsafe_allow_html=True)
 
-    # Failure taxonomy reference
-    st.markdown('<div class="section-header">Failure Taxonomy (from full experiment)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">Failure Taxonomy (from full experiment — artifacts/logs/failure_taxonomy.json)</div>', unsafe_allow_html=True)
     st.markdown("""
     <table class="compare-table">
       <tr><th>Category</th><th>Count</th><th>%</th><th>Description</th></tr>
