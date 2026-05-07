@@ -7,7 +7,6 @@ import streamlit as st
 import random
 import time
 
-# ── Page config ──────────────────────────────────────────────────
 st.set_page_config(
     page_title="RadSum — OCR Noise & RAG Demo",
     page_icon="🫁",
@@ -15,12 +14,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── Custom CSS ────────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap');
 
-/* ── Root variables ── */
 :root {
     --bg:        #0d1117;
     --bg2:       #161b22;
@@ -37,19 +34,14 @@ st.markdown("""
     --sans:      'DM Sans', sans-serif;
 }
 
-/* ── Global reset ── */
 html, body, [class*="css"] {
     font-family: var(--sans) !important;
     background-color: var(--bg) !important;
     color: var(--text) !important;
 }
-
 .stApp { background: var(--bg) !important; }
-
-/* ── Hide default Streamlit chrome ── */
 #MainMenu, footer, header { visibility: hidden; }
 
-/* ── Title area ── */
 .hero {
     padding: 2.5rem 0 1.5rem 0;
     border-bottom: 1px solid var(--border);
@@ -68,7 +60,6 @@ html, body, [class*="css"] {
     font-family: var(--sans) !important;
 }
 
-/* ── Stage badge ── */
 .stage-badge {
     display: inline-block;
     font-family: var(--mono);
@@ -85,7 +76,6 @@ html, body, [class*="css"] {
 .stage-rag     { background: #1c1f2a; color: var(--accent); border: 1px solid #58a6ff26; }
 .stage-eval    { background: #2a211c; color: var(--orange); border: 1px solid #f0883e26; }
 
-/* ── Cards ── */
 .card {
     background: var(--bg2);
     border: 1px solid var(--border);
@@ -102,7 +92,6 @@ html, body, [class*="css"] {
     letter-spacing: 1.5px;
 }
 
-/* ── Monospace text blocks ── */
 .code-block {
     font-family: var(--mono);
     font-size: .82rem;
@@ -119,10 +108,8 @@ html, body, [class*="css"] {
 .code-block.rag   { border-left-color: var(--accent); }
 .code-block.out   { border-left-color: var(--green); }
 
-/* ── Noise highlight ── */
 .noise-char { color: var(--red); font-weight: 600; }
 
-/* ── Metric pills ── */
 .metric-row { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: .5rem; }
 .metric-pill {
     display: flex; flex-direction: column; align-items: center;
@@ -142,20 +129,14 @@ html, body, [class*="css"] {
 .mid   { color: var(--orange); }
 .bad   { color: var(--red); }
 
-/* ── Arrow connector ── */
-.arrow {
-    text-align: center; font-size: 1.4rem;
-    color: var(--muted); margin: .25rem 0;
-}
+.arrow { text-align: center; font-size: 1.4rem; color: var(--muted); margin: .25rem 0; }
 
-/* ── Sidebar ── */
 [data-testid="stSidebar"] {
     background: var(--bg2) !important;
     border-right: 1px solid var(--border) !important;
 }
 [data-testid="stSidebar"] * { color: var(--text) !important; }
 
-/* ── Buttons ── */
 .stButton > button {
     background: var(--accent) !important;
     color: #0d1117 !important;
@@ -168,7 +149,6 @@ html, body, [class*="css"] {
 }
 .stButton > button:hover { opacity: .85 !important; }
 
-/* ── Selectbox / sliders ── */
 .stSelectbox label, .stSlider label, .stTextArea label {
     font-family: var(--mono) !important;
     font-size: .8rem !important;
@@ -186,7 +166,6 @@ html, body, [class*="css"] {
 }
 .stSlider [data-baseweb="slider"] { color: var(--accent) !important; }
 
-/* ── Section divider ── */
 .section-header {
     font-family: var(--mono);
     font-size: .7rem;
@@ -198,7 +177,6 @@ html, body, [class*="css"] {
     margin: 1.5rem 0 1rem 0;
 }
 
-/* ── Flow diagram ── */
 .flow {
     display: flex;
     align-items: center;
@@ -217,13 +195,13 @@ html, body, [class*="css"] {
     text-align: center;
     white-space: nowrap;
     flex-shrink: 0;
+    color: var(--text);
 }
-.flow-arrow { color: var(--muted); font-size: 1rem; flex-shrink: 0; }
+.flow-arrow { color: var(--text); font-size: 1rem; flex-shrink: 0; }
 .flow-step.active-clean  { border-color: var(--green);  color: var(--green);  }
 .flow-step.active-noisy  { border-color: var(--red);    color: var(--red);    }
 .flow-step.active-rag    { border-color: var(--accent); color: var(--accent); }
 
-/* ── Tab styling ── */
 .stTabs [data-baseweb="tab-list"] {
     background: var(--bg2) !important;
     border-bottom: 1px solid var(--border) !important;
@@ -244,16 +222,13 @@ html, body, [class*="css"] {
     border-bottom: 2px solid var(--accent) !important;
 }
 
-/* ── Info / warning boxes ── */
 .stInfo, .stWarning, .stSuccess, .stError {
     font-family: var(--mono) !important;
     font-size: .82rem !important;
 }
 
-/* ── Horizontal rule ── */
 hr { border-color: var(--border) !important; }
 
-/* ── Comparison table ── */
 .compare-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: .8rem; }
 .compare-table th { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: 1.5px;
                     border-bottom: 1px solid var(--border); padding: .5rem .75rem; text-align: left; }
@@ -262,55 +237,24 @@ hr { border-color: var(--border) !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Imports from your actual src/ modules ─────────────────────────
-import sys, os, time
+import sys, os, json
+import importlib.util
 
-# Add the project root (one level above streamlit_app/) to sys.path
-# so that `src/` is importable exactly as your pipeline scripts do it.
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# noise_injection.py  — inject_noise(), inject_noise_batch(), OCR_SUBSTITUTIONS
 from src.data.noise_injection import inject_noise, OCR_SUBSTITUTIONS
-
-# rag_model.py        — SimpleRAG (SentenceTransformer cosine similarity)
 from src.models.rag_model import SimpleRAG
+from src.evaluation.metrics import compute_rouge_l
+from src.data.load_data import _synthetic_fallback
 
-# run_a3_diagnostics  — mock_summarize() rule-based summarizer
-#   We import it directly so it is the exact same function used in your pipeline.
-import importlib.util, types
 _diag_path = os.path.join(PROJECT_ROOT, "scripts", "run_a3_diagnostics.py")
 _spec = importlib.util.spec_from_file_location("run_a3_diagnostics", _diag_path)
 _diag_mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_diag_mod)
 mock_summarize = _diag_mod.mock_summarize
 
-# metrics.py          — compute_rouge_l() using rouge_score library
-from src.evaluation.metrics import compute_rouge_l
-
-# load_data.py        — to read your saved train split as the RAG knowledge base
-from src.data.load_data import _synthetic_fallback
-import json
-
-# ── Load knowledge base (use saved train split if available) ───────
-@st.cache_resource
-def load_knowledge_base():
-    train_path = os.path.join(PROJECT_ROOT, "artifacts", "data", "train.json")
-    if os.path.exists(train_path):
-        with open(train_path) as f:
-            kb = json.load(f)
-        return kb
-    # fall back to synthetic data (same as load_data._synthetic_fallback)
-    return _synthetic_fallback()
-
-@st.cache_resource
-def load_rag(kb):
-    rag = SimpleRAG(embedding_model="all-MiniLM-L6-v2")
-    rag.build_index(kb)
-    return rag
-
-# ── Sample findings (from your actual test.json records) ──────────
 SAMPLE_FINDINGS = {
     "Normal Chest":
         "The lungs are clear bilaterally. No focal consolidation, pleural effusion, or pneumothorax is identified. "
@@ -336,22 +280,41 @@ SAMPLE_FINDINGS = {
 }
 
 SAMPLE_REFERENCES = {
-    "Normal Chest":            "No acute cardiopulmonary abnormality.",
-    "Pneumonia":               "Right lower lobe pneumonia. Mild cardiomegaly.",
-    "COPD / Emphysema":        "Hyperinflation consistent with chronic obstructive pulmonary disease (COPD).",
-    "Congestive Heart Failure":"Cardiomegaly with bilateral pleural effusions and pulmonary vascular congestion, consistent with congestive heart failure.",
-    "Pneumothorax":            "Right-sided pneumothorax with partial lung collapse.",
-    "Atelectasis":             "Subsegmental atelectasis at the left base. No acute pneumonia.",
-    "Pulmonary Edema":         "Pulmonary edema with cardiomegaly and bilateral pleural effusions.",
+    "Normal Chest":             "No acute cardiopulmonary abnormality.",
+    "Pneumonia":                "Right lower lobe pneumonia. Mild cardiomegaly.",
+    "COPD / Emphysema":         "Hyperinflation consistent with chronic obstructive pulmonary disease (COPD).",
+    "Congestive Heart Failure": "Cardiomegaly with bilateral pleural effusions and pulmonary vascular congestion, consistent with congestive heart failure.",
+    "Pneumothorax":             "Right-sided pneumothorax with partial lung collapse.",
+    "Atelectasis":              "Subsegmental atelectasis at the left base. No acute pneumonia.",
+    "Pulmonary Edema":          "Pulmonary edema with cardiomegaly and bilateral pleural effusions.",
 }
 
-# ── Helper ────────────────────────────────────────────────────────
 def color_class(val: float) -> str:
     if val >= 0.35: return "good"
     if val >= 0.15: return "mid"
     return "bad"
 
-# ── SIDEBAR ───────────────────────────────────────────────────────
+def rouge_bar(val):
+    width = int(val * 400)
+    color_map = {"good": "#3fb950", "mid": "#f0883e", "bad": "#f85149"}
+    c = color_class(val)
+    return f'<div style="height:8px;width:{width}px;background:{color_map[c]};border-radius:4px;margin-top:4px;"></div>'
+
+@st.cache_resource
+def load_knowledge_base():
+    train_path = os.path.join(PROJECT_ROOT, "artifacts", "data", "train.json")
+    if os.path.exists(train_path):
+        with open(train_path) as f:
+            return json.load(f)
+    return _synthetic_fallback()
+
+@st.cache_resource
+def load_rag(kb):
+    rag = SimpleRAG(embedding_model="all-MiniLM-L6-v2")
+    rag.build_index(kb)
+    return rag
+
+
 with st.sidebar:
     st.markdown("### 🫁 RadSum Demo")
     st.markdown("<p style='font-family:IBM Plex Mono;font-size:.75rem;color:#8b949e;'>CS818 · LLM Project</p>", unsafe_allow_html=True)
@@ -383,7 +346,7 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-# ── HERO ──────────────────────────────────────────────────────────
+
 st.markdown("""
 <div class="hero">
   <h1>Radiology Summarization under OCR Noise</h1>
@@ -391,7 +354,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── PIPELINE FLOW ─────────────────────────────────────────────────
 st.markdown("""
 <div class="flow">
   <div class="flow-step">📄 Findings Text</div>
@@ -408,7 +370,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── INPUT ─────────────────────────────────────────────────────────
 if use_custom:
     findings_text = st.text_area(
         "Enter radiology findings",
@@ -439,72 +400,56 @@ if not run_btn and "pipeline_ran" not in st.session_state:
     """, unsafe_allow_html=True)
     st.stop()
 
-# ── RUN PIPELINE using your exact src/ modules ────────────────────
 st.session_state["pipeline_ran"] = True
 
 with st.spinner("Loading knowledge base & building RAG index…"):
     kb  = load_knowledge_base()
-    rag = load_rag(kb) # hashable key for cache
+    rag = load_rag(kb)
 
 with st.spinner("Running pipeline…"):
 
-    # ── Stage 1: Clean baseline ───────────────────────────────────
-    # inject_noise() from src/data/noise_injection.py  (returns str, no tuple)
-    clean_pred  = mock_summarize(findings_text)
-    # compute_rouge_l() from src/evaluation/metrics.py
+    clean_pred    = mock_summarize(findings_text)
     clean_metrics = compute_rouge_l([clean_pred], [reference_impression])
     clean_rouge   = clean_metrics["rouge_l_f"]
 
-    # ── Stage 2: Noisy baseline ───────────────────────────────────
-    # inject_noise() signature: (text, noise_level, seed) → str
-    noisy_text  = inject_noise(findings_text, noise_level=noise_level, seed=int(seed))
-    noisy_pred  = mock_summarize(noisy_text)
+    noisy_text    = inject_noise(findings_text, noise_level=noise_level, seed=int(seed))
+    noisy_pred    = mock_summarize(noisy_text)
     noisy_metrics = compute_rouge_l([noisy_pred], [reference_impression])
     noisy_rouge   = noisy_metrics["rouge_l_f"]
 
-    # ── Stage 3: RAG enhanced ─────────────────────────────────────
-    # SimpleRAG.retrieve() uses SentenceTransformer cosine similarity
-    # SimpleRAG.build_rag_prompt() prepends retrieved examples
     rag_prompt_str = rag.build_rag_prompt(noisy_text, top_k=top_k)
-    retrieved_raw  = rag.retrieve(noisy_text, top_k=top_k)   # list of dicts
-    # Build (similarity_placeholder, doc) pairs for display
-    # (SimpleRAG doesn't expose raw scores, so we compute word-overlap for display only)
+    retrieved_raw  = rag.retrieve(noisy_text, top_k=top_k)
+
     def _jaccard(a, b):
         ta, tb = set(a.lower().split()), set(b.lower().split())
         return len(ta & tb) / len(ta | tb) if (ta | tb) else 0.0
+
     retrieved_docs = [(_jaccard(noisy_text, r["findings"]), r) for r in retrieved_raw]
 
-    rag_record  = {"findings": rag_prompt_str, "impression": reference_impression}
     rag_pred    = mock_summarize(rag_prompt_str)
     rag_metrics = compute_rouge_l([rag_pred], [reference_impression])
     rag_rouge   = rag_metrics["rouge_l_f"]
 
-    # ── Derived stats ─────────────────────────────────────────────
     degradation = (clean_rouge - noisy_rouge) / clean_rouge * 100 if clean_rouge > 0 else 0.0
-    recovery    = (rag_rouge - noisy_rouge)   / noisy_rouge * 100 if noisy_rouge > 0 else 0.0
 
-# ── TABS ──────────────────────────────────────────────────────────
+
 tab1, tab2, tab3, tab4 = st.tabs([
     "Stage 1 · Clean", "Stage 2 · Noisy", "Stage 3 · RAG", "Results"
 ])
 
-# ─── TAB 1: CLEAN ────────────────────────────────────────────────
 with tab1:
     st.markdown('<div class="stage-badge stage-clean">Stage 1 — Clean Baseline</div>', unsafe_allow_html=True)
-
     col1, col2 = st.columns([1, 1], gap="large")
 
     with col1:
         st.markdown('<div class="section-header">Input · Findings</div>', unsafe_allow_html=True)
         st.markdown(f'<div class="code-block">{findings_text}</div>', unsafe_allow_html=True)
-
         st.markdown('<div class="section-header">Reference Impression</div>', unsafe_allow_html=True)
         st.markdown(f'<div class="code-block out">{reference_impression}</div>', unsafe_allow_html=True)
 
     with col2:
         st.markdown('<div class="section-header">Predicted Impression</div>', unsafe_allow_html=True)
         st.markdown(f'<div class="code-block out">{clean_pred}</div>', unsafe_allow_html=True)
-
         st.markdown('<div class="section-header">Metrics</div>', unsafe_allow_html=True)
         cc = color_class(clean_rouge)
         st.markdown(f"""
@@ -527,21 +472,17 @@ with tab1:
           </div>
         </div>
         """, unsafe_allow_html=True)
-
         st.markdown("<br>", unsafe_allow_html=True)
-        st.info("ℹ️  Clean input = best-case performance. No corruption applied.", icon=None)
+        st.info("ℹ️  Clean input — no corruption applied.")
 
-# ─── TAB 2: NOISY ────────────────────────────────────────────────
 with tab2:
     st.markdown('<div class="stage-badge stage-noisy">Stage 2 — Noisy Baseline</div>', unsafe_allow_html=True)
-
     col1, col2 = st.columns([1, 1], gap="large")
 
     with col1:
         st.markdown('<div class="section-header">Original Findings</div>', unsafe_allow_html=True)
         st.markdown(f'<div class="code-block">{findings_text}</div>', unsafe_allow_html=True)
-
-        st.markdown('<div class="section-header">How noise is injected — src/data/noise_injection.py</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">Noise Operations</div>', unsafe_allow_html=True)
         st.markdown("""
         <div class="card" style="margin-bottom:0;">
           <table class="compare-table">
@@ -557,10 +498,8 @@ with tab2:
     with col2:
         st.markdown(f'<div class="section-header">Corrupted Findings @ {int(noise_level*100)}% noise</div>', unsafe_allow_html=True)
         st.markdown(f'<div class="code-block noisy">{noisy_text}</div>', unsafe_allow_html=True)
-
         st.markdown('<div class="section-header">Predicted Impression</div>', unsafe_allow_html=True)
         st.markdown(f'<div class="code-block noisy">{noisy_pred}</div>', unsafe_allow_html=True)
-
         st.markdown('<div class="section-header">Metrics</div>', unsafe_allow_html=True)
         nc = color_class(noisy_rouge)
         deg_color = "bad" if degradation > 20 else "mid" if degradation > 5 else "good"
@@ -580,11 +519,11 @@ with tab2:
           </div>
           <div class="metric-pill">
             <span class="label">Degradation</span>
-            <span class="value {deg_color}">−{degradation:.1f}%</span>
+            <span class="value {deg_color}">-{degradation:.1f}%</span>
           </div>
         </div>
         """, unsafe_allow_html=True)
-
+        st.markdown("<br>", unsafe_allow_html=True)
         if degradation > 20:
             st.error(f"⚠️  Significant degradation ({degradation:.1f}%) from noise.")
         elif degradation > 5:
@@ -592,11 +531,9 @@ with tab2:
         else:
             st.success(f"Low degradation ({degradation:.1f}%) — model was robust at this noise level.")
 
-# ─── TAB 3: RAG ──────────────────────────────────────────────────
 with tab3:
     st.markdown('<div class="stage-badge stage-rag">Stage 3 — RAG Enhanced</div>', unsafe_allow_html=True)
-
-    st.markdown(f'<div class="section-header">Retrieved Knowledge Base Examples (top-{top_k}) — src/models/rag_model.py · SimpleRAG</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="section-header">Retrieved Knowledge Base Examples (top-{top_k})</div>', unsafe_allow_html=True)
 
     for i, (sim, doc) in enumerate(retrieved_docs):
         sim_pct = int(sim * 100)
@@ -619,7 +556,6 @@ with tab3:
         st.markdown(f'<div class="code-block out">{rag_pred}</div>', unsafe_allow_html=True)
     with col2:
         rc = color_class(rag_rouge)
-        rec_color = "good" if recovery > 0 else "bad"
         st.markdown(f"""
         <div class="metric-row">
           <div class="metric-pill">
@@ -638,24 +574,16 @@ with tab3:
             <span class="label">RAG top-k</span>
             <span class="value" style="color:#58a6ff;">{top_k}</span>
           </div>
-          <div class="metric-pill">
-            <span class="label">Recovery</span>
-            <span class="value {rec_color}">{'+' if recovery >= 0 else ''}{recovery:.1f}%</span>
-          </div>
         </div>
         """, unsafe_allow_html=True)
 
-# ─── TAB 4: RESULTS ──────────────────────────────────────────────
 with tab4:
     st.markdown('<div class="stage-badge stage-eval">Results Summary</div>', unsafe_allow_html=True)
-
     st.markdown('<div class="section-header">Condition Comparison</div>', unsafe_allow_html=True)
 
-    def rouge_bar(val):
-        width = int(val * 400)
-        color_map = {"good": "#3fb950", "mid": "#f0883e", "bad": "#f85149"}
-        c = color_class(val)
-        return f'<div style="height:8px;width:{width}px;background:{color_map[c]};border-radius:4px;margin-top:4px;"></div>'
+    vs_clean_rag = (rag_rouge - clean_rouge) / clean_rouge * 100 if clean_rouge > 0 else 0.0
+    vs_clean_rag_cls = "good" if vs_clean_rag >= 0 else "mid"
+    vs_clean_rag_str = f"{'+' if vs_clean_rag >= 0 else ''}{vs_clean_rag:.1f}%"
 
     st.markdown(f"""
     <table class="compare-table">
@@ -669,31 +597,22 @@ with tab4:
       <tr>
         <td><span class="stage-badge stage-clean" style="margin:0;padding:.15rem .5rem;font-size:.65rem;">Clean</span></td>
         <td style="color:#8b949e;">No noise</td>
-        <td>
-          <span class="{color_class(clean_rouge)}">{clean_rouge:.4f}</span>
-          {rouge_bar(clean_rouge)}
-        </td>
+        <td><span class="{color_class(clean_rouge)}">{clean_rouge:.4f}</span>{rouge_bar(clean_rouge)}</td>
         <td style="color:#8b949e;">baseline</td>
         <td style="font-family:'IBM Plex Mono';font-size:.75rem;">{clean_pred}</td>
       </tr>
       <tr>
         <td><span class="stage-badge stage-noisy" style="margin:0;padding:.15rem .5rem;font-size:.65rem;">Noisy</span></td>
         <td style="color:#f85149;">{int(noise_level*100)}% OCR noise</td>
-        <td>
-          <span class="{color_class(noisy_rouge)}">{noisy_rouge:.4f}</span>
-          {rouge_bar(noisy_rouge)}
-        </td>
-        <td class="{'bad' if degradation > 10 else 'mid'}">−{degradation:.1f}%</td>
+        <td><span class="{color_class(noisy_rouge)}">{noisy_rouge:.4f}</span>{rouge_bar(noisy_rouge)}</td>
+        <td class="{'bad' if degradation > 10 else 'mid'}">-{degradation:.1f}%</td>
         <td style="font-family:'IBM Plex Mono';font-size:.75rem;">{noisy_pred}</td>
       </tr>
       <tr>
         <td><span class="stage-badge stage-rag" style="margin:0;padding:.15rem .5rem;font-size:.65rem;">RAG (k={top_k})</span></td>
         <td style="color:#58a6ff;">{int(noise_level*100)}% + retrieval</td>
-        <td>
-          <span class="{color_class(rag_rouge)}">{rag_rouge:.4f}</span>
-          {rouge_bar(rag_rouge)}
-        </td>
-        <td class="{'good' if rag_rouge >= clean_rouge else 'mid'}">{'+' if rag_rouge >= clean_rouge else ''}{((rag_rouge-clean_rouge)/clean_rouge*100 if clean_rouge > 0 else 0.0):.1f}%</td>
+        <td><span class="{color_class(rag_rouge)}">{rag_rouge:.4f}</span>{rouge_bar(rag_rouge)}</td>
+        <td class="{vs_clean_rag_cls}">{vs_clean_rag_str}</td>
         <td style="font-family:'IBM Plex Mono';font-size:.75rem;">{rag_pred}</td>
       </tr>
     </table>
@@ -702,31 +621,33 @@ with tab4:
     st.markdown('<div class="section-header" style="margin-top:2rem;">Key Takeaways</div>', unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns(3)
+    # with col1:
+    #     deg_col = '#f85149' if degradation > 20 else '#f0883e' if degradation > 5 else '#3fb950'
+    #     st.markdown(f"""
+    #     <div class="card">
+    #       <h4>Noise Degradation</h4>
+    #       <div style="font-family:'IBM Plex Mono';font-size:2rem;color:{deg_col};">
+    #         -{degradation:.1f}%
+    #       </div>
+    #       <p style="font-family:'IBM Plex Mono';font-size:.75rem;color:#8b949e;margin-top:.5rem;">
+    #         ROUGE-L drop from clean to noisy at {int(noise_level*100)}% corruption
+    #       </p>
+    #     </div>
+    #     """, unsafe_allow_html=True)
+    # with col2:
+    #     rag_col = '#3fb950' if vs_clean_rag >= 0 else '#f0883e'
+    #     st.markdown(f"""
+    #     <div class="card">
+    #       <h4>RAG vs Clean</h4>
+    #       <div style="font-family:'IBM Plex Mono';font-size:2rem;color:{rag_col};">
+    #         {vs_clean_rag_str}
+    #       </div>
+    #       <p style="font-family:'IBM Plex Mono';font-size:.75rem;color:#8b949e;margin-top:.5rem;">
+    #         ROUGE-L: clean baseline vs RAG (k={top_k})
+    #       </p>
+    #     </div>
+    #     """, unsafe_allow_html=True)
     with col1:
-        st.markdown(f"""
-        <div class="card">
-          <h4>Noise Degradation</h4>
-          <div style="font-family:'IBM Plex Mono';font-size:2rem;color:{'#f85149' if degradation > 20 else '#f0883e' if degradation > 5 else '#3fb950'};">
-            −{degradation:.1f}%
-          </div>
-          <p style="font-family:'IBM Plex Mono';font-size:.75rem;color:#8b949e;margin-top:.5rem;">
-            ROUGE-L drop from clean → noisy at {int(noise_level*100)}% corruption
-          </p>
-        </div>
-        """, unsafe_allow_html=True)
-    with col2:
-        st.markdown(f"""
-        <div class="card">
-          <h4>RAG Recovery</h4>
-          <div style="font-family:'IBM Plex Mono';font-size:2rem;color:{'#3fb950' if recovery > 0 else '#f85149'};">
-            {'+' if recovery >= 0 else ''}{recovery:.1f}%
-          </div>
-          <p style="font-family:'IBM Plex Mono';font-size:.75rem;color:#8b949e;margin-top:.5rem;">
-            ROUGE-L improvement from noisy → RAG (k={top_k})
-          </p>
-        </div>
-        """, unsafe_allow_html=True)
-    with col3:
         chars_corrupted = max(1, int(len(findings_text) * noise_level))
         st.markdown(f"""
         <div class="card">
@@ -740,7 +661,7 @@ with tab4:
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown('<div class="section-header">Failure Taxonomy (from full experiment — artifacts/logs/failure_taxonomy.json)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">Failure Taxonomy</div>', unsafe_allow_html=True)
     st.markdown("""
     <table class="compare-table">
       <tr><th>Category</th><th>Count</th><th>%</th><th>Description</th></tr>
